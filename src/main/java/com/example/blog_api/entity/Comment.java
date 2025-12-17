@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "comment")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    @NotBlank
+    @Column(nullable = false)
     private String comment;
 
     private LocalDate commentDate = LocalDate.now();

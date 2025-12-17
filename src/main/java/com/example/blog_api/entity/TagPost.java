@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Table(name = "tag_post")
 @Getter
 @Setter
 public class TagPost {

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "post")
 @Getter
 @Setter
 @Builder
@@ -19,13 +20,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-    @NotBlank
+    @Column(nullable = false)
     private String title;
 
 
     private String description;
 
-    @NotBlank
+    @Column(nullable = false)
     private String content;
 
 
@@ -33,8 +34,8 @@ public class Post {
     private String imageUrl;//Extract Object ImagePost(author, where) to List
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User author;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<TagPost> tags = new HashSet<>();//
