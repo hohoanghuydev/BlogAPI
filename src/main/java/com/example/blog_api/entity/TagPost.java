@@ -1,14 +1,13 @@
 package com.example.blog_api.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "tag_post")
 @Getter
 @Setter
+@NoArgsConstructor
 public class TagPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +20,9 @@ public class TagPost {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public TagPost(Tag tag, Post post) {
+        this.tag = tag;
+        this.post = post;
+    }
 }

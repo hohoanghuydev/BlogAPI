@@ -15,4 +15,10 @@ public class TagMapper {
     public static Tag toEntity(TagRequestDto request) {
         return Tag.builder().tagName(request.getTagName()).build();
     }
+
+    public static Tag toEntity(TagResponseDto response) {
+        return Tag.builder()
+                .tagId(response.getTagId())
+                .tagName(response.getTagName()).build();
+    }
 }

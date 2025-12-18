@@ -1,5 +1,7 @@
 package com.example.blog_api.controller;
 
+import com.example.blog_api.dto.DetailPostResponseDto;
+import com.example.blog_api.dto.PostCreateRequestDto;
 import com.example.blog_api.dto.PostRequestDto;
 import com.example.blog_api.dto.PostResponseDto;
 import com.example.blog_api.service.PostService;
@@ -30,8 +32,8 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostRequestDto request) {
-        PostResponseDto post = postService.create(request);
+    public ResponseEntity<DetailPostResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto request) {
+        DetailPostResponseDto post = postService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 }
