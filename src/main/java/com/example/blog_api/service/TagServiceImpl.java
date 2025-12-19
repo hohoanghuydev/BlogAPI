@@ -19,17 +19,15 @@ public class TagServiceImpl implements TagService{
     private TagRepository tagRepo;
 
     private Tag getTag(Long id){
-        return tagRepo.findById(id).orElseThrow(() -> new ResourceNotFound(String.format(ErrorMessage.ERROR_TAG_NOT_FOUND, id)));
+        return tagRepo.findById(id).orElseThrow(
+                () -> new ResourceNotFound(ErrorMessage.ERROR_TAG_NOT_FOUND)
+        );
     }
 
-    private Tag getTag(String tagName) {//? tai sao khong throw binh thuong duoc
-        Tag tag = tagRepo.findByTagName(tagName);
-
-        if (tag == null){
-            throw new ResourceNotFound(String.format(ErrorMessage.ERROR_TAG_NOT_FOUND, tagName));
-        }
-
-        return tag;
+    private Tag getTag(String tagName) {
+        return tagRepo.findByTagName(tagName).orElseThrow(
+                () -> new ResourceNotFound(ErrorMessage.ERROR_TAG_NOT_FOUND)
+        );
     }
 
     @Override

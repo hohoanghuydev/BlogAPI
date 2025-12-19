@@ -11,9 +11,11 @@ import com.example.blog_api.mapper.PostMapper;
 import com.example.blog_api.mapper.TagMapper;
 import com.example.blog_api.repository.PostRepository;
 import com.example.blog_api.repository.TagPostRepository;
+import com.example.blog_api.repository.TagRepository;
 import com.example.blog_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,12 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepo;
 
     @Autowired
-    private TagService tagService;//?
+    private TagRepository tagRepo;//? Không nên gọi service?
 
     @Autowired
     private TagPostRepository tagPostRepo;//?
@@ -40,24 +43,27 @@ public class PostServiceImpl implements PostService {
         );
     }
 
-    private Set<Tag> findOrCreateTag(Set<String> nameTags) {
+    private Set<Tag> findOrCreateTag(Set<String> tagsName) {
         Set<Tag> tags = new HashSet<>();
 
-        nameTags.forEach(nameTag -> {
-            TagResponseDto tagResponse = tagService.checkExists(nameTag)
-                    ? tagService.findByInfo(nameTag)
-                    : tagService.create(new TagRequestDto(nameTag));
+        tagsName.forEach(tagName -> {
+            Tag tag = tagRepo.findByTagName(tagName)
+                    .orElse(tagRepo.save(Tag.builder().tagName(tagName).build()));
 
-            tags.add(TagMapper.toEntity(tagResponse));
+            tags.add(tag);
         });
 
         return tags;
     }
 
     private void saveTagsPost(Set<Tag> tags, Post post) {
-        for (Tag tag : tags) {
-            tagPostRepo.save(new TagPost(tag, post));
-        }
+        Set<TagPost> tagPosts = new HashSet<>();
+
+        tags.forEach(tag -> {
+            tagPosts.add(new TagPost(tag, post));
+        });
+
+        tagPostRepo.saveAll(tagPosts);
     }
 
     private User getUser(Long id) {//?
@@ -71,6 +77,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public DetailPostResponseDto create(PostCreateRequestDto request) {
         User userPost = getUser(request.getUserId());//? Chỗ này bị lặp này, có nên gọi luôn service không nhỉ
 
