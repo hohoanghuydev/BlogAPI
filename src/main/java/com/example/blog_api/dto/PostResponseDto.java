@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -17,5 +18,6 @@ public class PostResponseDto {
     private String content;
     private LocalDate publishDate;
     private String imageUrl;//Extract Object ImagePost(author, where) to List
-    private UserResponseDto user;
+    private String author;
+    private Set<String> tags;
 }

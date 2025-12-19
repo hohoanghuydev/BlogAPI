@@ -42,6 +42,19 @@ public class PostMapper {
                 .build();
     }
 
+    public static PostResponseDto toResponse(Post post, Set<String> tags) {
+        return PostResponseDto.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .description(post.getDescription())
+                .content(post.getContent())
+                .publishDate(LocalDate.now())
+                .imageUrl(post.getImageUrl())
+                .author(post.getUser().getUsername())//? Coi chung null
+                .tags(tags)
+                .build();
+    }
+
     public static PostResponseDto toResponse(Post post) {
         return PostResponseDto.builder()
                 .postId(post.getPostId())
@@ -50,11 +63,11 @@ public class PostMapper {
                 .content(post.getContent())
                 .publishDate(LocalDate.now())
                 .imageUrl(post.getImageUrl())
-                .user(UserMapper.toResponseDto(post.getUser()))//? Coi chung null
+                .author(post.getUser().getUsername())//? Coi chung null
                 .build();
     }
 
-    public static DetailPostResponseDto toResponse(Post post, Set<TagResponseDto> tags) {
+    public static DetailPostResponseDto toResponseDetail(Post post, Set<TagResponseDto> tags) {
         return DetailPostResponseDto.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())

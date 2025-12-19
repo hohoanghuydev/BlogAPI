@@ -4,6 +4,7 @@ import com.example.blog_api.dto.DetailPostResponseDto;
 import com.example.blog_api.dto.PostCreateRequestDto;
 import com.example.blog_api.dto.PostRequestDto;
 import com.example.blog_api.dto.PostResponseDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface PostService {
     PostResponseDto findById(Long id);
 
     //Query
-    List<PostResponseDto> findAll();
+    List<PostResponseDto> findAll(Pageable pageable, String searchText);
 }

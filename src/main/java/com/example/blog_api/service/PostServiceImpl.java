@@ -14,8 +14,10 @@ import com.example.blog_api.repository.TagPostRepository;
 import com.example.blog_api.repository.TagRepository;
 import com.example.blog_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +50,7 @@ public class PostServiceImpl implements PostService {
 
         tagsName.forEach(tagName -> {
             Tag tag = tagRepo.findByTagName(tagName)
-                    .orElse(tagRepo.save(Tag.builder().tagName(tagName).build()));
+                    .orElseGet(() -> tagRepo.save(Tag.builder().tagName(tagName).build()));
 
             tags.add(tag);
         });
@@ -76,6 +78,12 @@ public class PostServiceImpl implements PostService {
         return tags.stream().map(TagMapper::toResponse).collect(Collectors.toSet());
     }
 
+    private Set<String> findTagsByPostId(Long postId) {
+        Set<TagPost> tagPosts = tagPostRepo.findAllByPost_Id(postId);
+
+        return tagPosts.stream().map(tagPost -> tagPost.getTag().getTagName()).collect(Collectors.toSet());
+    }
+
     @Override
     @Transactional
     public DetailPostResponseDto create(PostCreateRequestDto request) {
@@ -86,7 +94,7 @@ public class PostServiceImpl implements PostService {
         saveTagsPost(tags, createdPost);//?
 
         Set<TagResponseDto> tagResponse = formatToTagsResponse(tags);
-        return PostMapper.toResponse(createdPost, tagResponse);
+        return PostMapper.toResponseDetail(createdPost, tagResponse);
     }
 
     @Override
@@ -102,11 +110,24 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDto findById(Long id) {
         Post post = getPostById(id);
-        return PostMapper.toResponse(post);
+        Set<String> tags = findTagsByPostId(id);
+
+        return PostMapper.toResponse(post, tags);
     }
 
     @Override
-    public List<PostResponseDto> findAll() {
-        return postRepo.findAll().stream().map(PostMapper::toResponse).toList();
+    public List<PostResponseDto> findAll(Pageable pageable, String searchText) {
+        Page<Post> paginationPost;
+
+        if (searchText == null || searchText.isEmpty()) {
+            paginationPost = postRepo.findAll(pageable);
+        } else {
+            paginationPost = postRepo.findByTitleContainingIgnoreCase(pageable, searchText);
+        }
+
+        return paginationPost.map(post -> {
+            Set<String> tags = findTagsByPostId(post.getPostId());
+            return PostMapper.toResponse(post, tags);
+        }).toList();
     }
 }
