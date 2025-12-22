@@ -85,4 +85,11 @@ public class PostMapper {
                 .tags(tags)//? Lay truc tiep tu post duoc khong ta
                 .build();
     }
+
+    public static void updatePost(Post postUpdate, PostUpdateRequestDto request) {
+        postUpdate.setTitle(request.getTitle());
+        postUpdate.setDescription(request.getDescription());
+        postUpdate.setContent(request.getContent());
+        postUpdate.setImageUrl(request.getImageUrl());
+    }
 }

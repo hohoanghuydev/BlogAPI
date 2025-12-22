@@ -16,4 +16,6 @@ public interface TagPostRepository extends JpaRepository<TagPost, Long> {
 
     @Query(value = "select id, tag_post.tag_id, post_id from tag_post left join tag where tag_name = :name and tag_post.tag_id = tag.tag_id", nativeQuery = true)
     Page<TagPost> findAllByTag_Name(Pageable pageable, @Param("name") String name);
+
+    void deleteByPost_PostId(Long postId);
 }

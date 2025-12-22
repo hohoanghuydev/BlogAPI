@@ -9,10 +9,7 @@ import com.example.blog_api.exception.ResourceNotFound;
 import com.example.blog_api.helper.ErrorMessage;
 import com.example.blog_api.mapper.PostMapper;
 import com.example.blog_api.mapper.TagMapper;
-import com.example.blog_api.repository.PostRepository;
-import com.example.blog_api.repository.TagPostRepository;
-import com.example.blog_api.repository.TagRepository;
-import com.example.blog_api.repository.UserRepository;
+import com.example.blog_api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private TagPostRepository tagPostRepo;//?
+
+    @Autowired
+    private CommentRepository commentRepo;
 
     @Autowired
     private UserRepository userRepo;//? Coi co can transaction khong
@@ -103,14 +103,26 @@ public class PostServiceImpl implements PostService {
         return PostMapper.toResponseDetail(createdPost, tagResponse);
     }
 
+    @Transactional
     @Override
-    public PostResponseDto update(Long id, PostRequestDto request) {
-        return null;
+    public PostResponseDto update(Long id, PostUpdateRequestDto request) {
+        Post post = getPostById(id);
+
+        PostMapper.updatePost(post, request);
+        Post updatedPost = postRepo.save(post);
+        Set<String> tags = findTagsByPostId(updatedPost.getPostId());
+
+        return PostMapper.toResponse(updatedPost, tags);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
+        Post post = getPostById(id);
 
+        tagPostRepo.deleteByPost_PostId(id);
+        commentRepo.deleteByPost_PostId(id);
+        postRepo.delete(post);
     }
 
     @Transactional

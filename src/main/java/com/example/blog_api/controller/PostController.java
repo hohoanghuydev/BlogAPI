@@ -1,9 +1,6 @@
 package com.example.blog_api.controller;
 
-import com.example.blog_api.dto.DetailPostResponseDto;
-import com.example.blog_api.dto.PostCreateRequestDto;
-import com.example.blog_api.dto.PostRequestDto;
-import com.example.blog_api.dto.PostResponseDto;
+import com.example.blog_api.dto.*;
 import com.example.blog_api.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +78,20 @@ public class PostController {
     public ResponseEntity<DetailPostResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto request) {
         DetailPostResponseDto post = postService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<PostResponseDto> updatePost(
+            @PathVariable Long id,
+            @Valid @RequestBody PostUpdateRequestDto request
+    ) {
+        PostResponseDto updatedPost = postService.update(id, request);
+        return ResponseEntity.ok(updatedPost);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        postService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
