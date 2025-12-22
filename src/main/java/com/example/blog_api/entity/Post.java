@@ -29,6 +29,7 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
+    private Long viewCount = 0L;
 
     private LocalDate publishDate = LocalDate.now();
     private String imageUrl;//Extract Object ImagePost(author, where) to List
@@ -38,10 +39,10 @@ public class Post {
     private User user;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private Set<TagPost> tags = new HashSet<>();//
+    private Set<TagPost> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private Set<Comment> comments = new HashSet<>();//
+    private Set<Comment> comments = new HashSet<>();
 
 
     //@Enumerable(EnumType.String)????

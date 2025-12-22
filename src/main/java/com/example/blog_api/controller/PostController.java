@@ -53,13 +53,20 @@ public class PostController {
     public ResponseEntity<List<PostResponseDto>> getAllPosts(
             @RequestParam(required = false) Long page,
             @RequestParam(required = false) Long size,
-            @RequestParam(required = false, name = "search") String searchText
+            @RequestParam(required = false, name = "search") String searchText,
+            @RequestParam(required = false, name = "tag") String tagName
     ) {
         int pageNumber = validatePage(page);
         int pageSize = validateSize(size);
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        List<PostResponseDto> posts = postService.findAll(pageable, searchText);
+        List<PostResponseDto> posts;
+
+        if (tagName == null || tagName.isEmpty()) {
+            posts = postService.findAll(pageable, searchText);
+        } else {
+            posts = postService.findAllPostByTag(pageable, tagName);
+        }
 
         return ResponseEntity.ok(posts);
     }

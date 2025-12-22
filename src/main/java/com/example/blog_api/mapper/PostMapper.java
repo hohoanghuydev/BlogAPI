@@ -17,6 +17,7 @@ public class PostMapper {
                 .publishDate(LocalDate.now())
                 .imageUrl(request.getImageUrl())
                 .user(userPost)
+                .viewCount(0L)
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class PostMapper {
                 .publishDate(LocalDate.now())
                 .imageUrl(request.getImageUrl())
                 .user(userPost)
+                .viewCount(0L)
                 .build();
     }
 
@@ -39,6 +41,7 @@ public class PostMapper {
                 .publishDate(LocalDate.now())
                 .imageUrl(request.getImageUrl())
                 .user(userPost)
+                .viewCount(0L)
                 .build();
     }
 
@@ -48,8 +51,9 @@ public class PostMapper {
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .content(post.getContent())
-                .publishDate(LocalDate.now())
+                .publishDate(post.getPublishDate())
                 .imageUrl(post.getImageUrl())
+                .viewCount(post.getViewCount())
                 .author(post.getUser().getUsername())//? Coi chung null
                 .tags(tags)
                 .build();
@@ -61,8 +65,9 @@ public class PostMapper {
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .content(post.getContent())
-                .publishDate(LocalDate.now())
+                .publishDate(post.getPublishDate())
                 .imageUrl(post.getImageUrl())
+                .viewCount(post.getViewCount())
                 .author(post.getUser().getUsername())//? Coi chung null
                 .build();
     }
@@ -73,8 +78,9 @@ public class PostMapper {
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .content(post.getContent())
+                .publishDate(post.getPublishDate())
                 .imageUrl(post.getImageUrl())
-                .publishDate(LocalDate.now())
+                .viewCount(post.getViewCount())
                 .user(UserMapper.toResponseDto(post.getUser()))
                 .tags(tags)//? Lay truc tiep tu post duoc khong ta
                 .build();

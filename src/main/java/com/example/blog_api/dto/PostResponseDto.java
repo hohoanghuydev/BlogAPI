@@ -19,5 +19,6 @@ public class PostResponseDto {
     private LocalDate publishDate;
     private String imageUrl;//Extract Object ImagePost(author, where) to List
     private String author;
+    private Long viewCount;
     private Set<String> tags;
 }

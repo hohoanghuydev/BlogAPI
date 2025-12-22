@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
+    private static final int VIEW_PER_REQUEST = 1;
     @Autowired
     private PostRepository postRepo;
 
@@ -84,6 +85,11 @@ public class PostServiceImpl implements PostService {
         return tagPosts.stream().map(tagPost -> tagPost.getTag().getTagName()).collect(Collectors.toSet());
     }
 
+    private void increaseView(Post post) {
+        post.setViewCount(post.getViewCount() + VIEW_PER_REQUEST);
+        postRepo.save(post);
+    }
+
     @Override
     @Transactional
     public DetailPostResponseDto create(PostCreateRequestDto request) {
@@ -107,10 +113,12 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    @Transactional
     @Override
     public PostResponseDto findById(Long id) {
         Post post = getPostById(id);
         Set<String> tags = findTagsByPostId(id);
+        increaseView(post);
 
         return PostMapper.toResponse(post, tags);
     }
@@ -129,5 +137,14 @@ public class PostServiceImpl implements PostService {
             Set<String> tags = findTagsByPostId(post.getPostId());
             return PostMapper.toResponse(post, tags);
         }).toList();
+    }
+
+    @Override
+    public List<PostResponseDto> findAllPostByTag(Pageable pageable, String tagName) {
+        Page<TagPost> tagPosts = tagPostRepo.findAllByTag_Name(pageable, tagName);
+        return tagPosts.map(tagPost -> {
+                    Set<String> tags = findTagsByPostId(tagPost.getPost().getPostId());
+                    return PostMapper.toResponse(tagPost.getPost(), tags);
+                }).toList();
     }
 }
