@@ -8,8 +8,6 @@ public class UserMapper {
     public static UserResponseDto toResponseDto(User user) {
         return UserResponseDto.builder().id(user.getId())
                 .username(user.getUsername())
-                .active(user.getActive())
-                .createdAt(user.getCreatedAt())
                 .build();
     }
 

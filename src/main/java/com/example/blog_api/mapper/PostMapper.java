@@ -2,7 +2,6 @@ package com.example.blog_api.mapper;
 
 import com.example.blog_api.dto.*;
 import com.example.blog_api.entity.Post;
-import com.example.blog_api.entity.Tag;
 import com.example.blog_api.entity.User;
 
 import java.time.LocalDate;
@@ -45,20 +44,6 @@ public class PostMapper {
                 .build();
     }
 
-    public static PostResponseDto toResponse(Post post, Set<String> tags) {
-        return PostResponseDto.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .description(post.getDescription())
-                .content(post.getContent())
-                .publishDate(post.getPublishDate())
-                .imageUrl(post.getImageUrl())
-                .viewCount(post.getViewCount())
-                .author(post.getUser().getUsername())//? Coi chung null
-                .tags(tags)
-                .build();
-    }
-
     public static PostResponseDto toResponse(Post post) {
         return PostResponseDto.builder()
                 .postId(post.getPostId())
@@ -68,7 +53,6 @@ public class PostMapper {
                 .publishDate(post.getPublishDate())
                 .imageUrl(post.getImageUrl())
                 .viewCount(post.getViewCount())
-                .author(post.getUser().getUsername())//? Coi chung null
                 .build();
     }
 

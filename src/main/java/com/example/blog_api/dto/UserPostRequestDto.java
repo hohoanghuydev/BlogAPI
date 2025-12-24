@@ -8,8 +8,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserPostRequestDto {
     @NotBlank(message = "Title can not empty")
     private String title;

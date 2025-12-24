@@ -7,11 +7,8 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
 @Getter
+@Setter
 public class PostCreateRequestDto {
     @NotBlank(message = "Title can not empty")
     private String title;

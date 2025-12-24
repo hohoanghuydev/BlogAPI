@@ -2,15 +2,12 @@ package com.example.blog_api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 public class UserRequestDto {
     @NotBlank(message = "Username can not empty")
     @Size(max = 100, message = "Username's max length is 100 characters")

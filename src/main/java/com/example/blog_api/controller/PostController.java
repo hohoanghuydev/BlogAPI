@@ -46,8 +46,16 @@ public class PostController {
         return size.intValue();
     }
 
+    /**
+     * Get all posts with pagination
+     * @param page : Page number (default: 1, min: 1)
+     * @param size : Page size (default: 10, min: 1, max: 100)
+     * @param tagName : Name tag
+     * @param searchText : Text input to search
+     * @return List of users
+     * */
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> getAllPosts(
+    public ResponseEntity<List<PostResponseDto>> findAllPosts(
             @RequestParam(required = false) Long page,
             @RequestParam(required = false) Long size,
             @RequestParam(required = false, name = "search") String searchText,
@@ -69,8 +77,8 @@ public class PostController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long id) {
-        PostResponseDto post = postService.findById(id);
+    public ResponseEntity<DetailPostResponseDto> findPostById(@PathVariable Long id) {
+        DetailPostResponseDto post = postService.findById(id);
         return ResponseEntity.ok(post);
     }
 

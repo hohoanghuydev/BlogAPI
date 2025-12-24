@@ -34,14 +34,14 @@ public class Post {
     private LocalDate publishDate = LocalDate.now();
     private String imageUrl;//Extract Object ImagePost(author, where) to List
 
-    @ManyToOne
+    @ManyToOne//Xem lại có cần lấy luôn user không (tùy thuộc vào response)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TagPost> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
 

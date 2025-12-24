@@ -23,6 +23,6 @@ public class Tag {
     private String tagName;
 //   String url: link to posts have same tag
 
-    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TagPost> posts = new HashSet<>();//Tại sao chỗ này cần phải khởi tạo
 }

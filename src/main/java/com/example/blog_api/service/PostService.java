@@ -11,7 +11,7 @@ public interface PostService {
     DetailPostResponseDto create(PostCreateRequestDto request);
     PostResponseDto update(Long id, PostUpdateRequestDto request);
     void delete(Long id);
-    PostResponseDto findById(Long id);
+    DetailPostResponseDto findById(Long id);
 
     //Query
     List<PostResponseDto> findAll(Pageable pageable, String searchText);

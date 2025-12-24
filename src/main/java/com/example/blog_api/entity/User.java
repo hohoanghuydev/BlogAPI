@@ -28,10 +28,10 @@ public class User {
 
     private Boolean active = true;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)//default is lazy
     private Set<Post> posts = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)//default is lazy
     private Set<Comment> comments = new HashSet<>();
 
     public User(String username, String password) {

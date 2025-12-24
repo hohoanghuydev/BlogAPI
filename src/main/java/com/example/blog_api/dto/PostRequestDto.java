@@ -9,9 +9,6 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class PostRequestDto {
     @NotBlank(message = "Title can not empty")
     private String title;

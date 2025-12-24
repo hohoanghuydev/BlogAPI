@@ -29,16 +29,16 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepo;
 
     @Autowired
-    private TagRepository tagRepo;//? Không nên gọi service?
+    private TagRepository tagRepo;
 
     @Autowired
-    private TagPostRepository tagPostRepo;//?
+    private TagPostRepository tagPostRepo;
 
     @Autowired
     private CommentRepository commentRepo;
 
     @Autowired
-    private UserRepository userRepo;//? Coi co can transaction khong
+    private UserRepository userRepo;
 
     private Post getPostById(Long id) {
         return postRepo.findById(id).orElseThrow(
@@ -79,10 +79,10 @@ public class PostServiceImpl implements PostService {
         return tags.stream().map(TagMapper::toResponse).collect(Collectors.toSet());
     }
 
-    private Set<String> findTagsByPostId(Long postId) {
+    private Set<Tag> findTagsByPostId(Long postId) {
         Set<TagPost> tagPosts = tagPostRepo.findAllByPost_Id(postId);
 
-        return tagPosts.stream().map(tagPost -> tagPost.getTag().getTagName()).collect(Collectors.toSet());
+        return tagPosts.stream().map(TagPost::getTag).collect(Collectors.toSet());
     }
 
     private void increaseView(Post post) {
@@ -110,9 +110,8 @@ public class PostServiceImpl implements PostService {
 
         PostMapper.updatePost(post, request);
         Post updatedPost = postRepo.save(post);
-        Set<String> tags = findTagsByPostId(updatedPost.getPostId());
 
-        return PostMapper.toResponse(updatedPost, tags);
+        return PostMapper.toResponse(updatedPost);
     }
 
     @Transactional
@@ -120,19 +119,17 @@ public class PostServiceImpl implements PostService {
     public void delete(Long id) {
         Post post = getPostById(id);
 
-        tagPostRepo.deleteByPost_PostId(id);
-        commentRepo.deleteByPost_PostId(id);
         postRepo.delete(post);
     }
 
     @Transactional
     @Override
-    public PostResponseDto findById(Long id) {
+    public DetailPostResponseDto findById(Long id) {
         Post post = getPostById(id);
-        Set<String> tags = findTagsByPostId(id);
+        Set<TagResponseDto> tags = findTagsByPostId(id).stream().map(TagMapper::toResponse).collect(Collectors.toSet());
         increaseView(post);
 
-        return PostMapper.toResponse(post, tags);
+        return PostMapper.toResponseDetail(post, tags);
     }
 
     @Override
@@ -145,18 +142,12 @@ public class PostServiceImpl implements PostService {
             paginationPost = postRepo.findByTitleContainingIgnoreCase(pageable, searchText);
         }
 
-        return paginationPost.map(post -> {
-            Set<String> tags = findTagsByPostId(post.getPostId());
-            return PostMapper.toResponse(post, tags);
-        }).toList();
+        return paginationPost.map(PostMapper::toResponse).toList();
     }
 
     @Override
     public List<PostResponseDto> findAllPostByTag(Pageable pageable, String tagName) {
         Page<TagPost> tagPosts = tagPostRepo.findAllByTag_Name(pageable, tagName);
-        return tagPosts.map(tagPost -> {
-                    Set<String> tags = findTagsByPostId(tagPost.getPost().getPostId());
-                    return PostMapper.toResponse(tagPost.getPost(), tags);
-                }).toList();
+        return tagPosts.map(tagPost -> PostMapper.toResponse(tagPost.getPost())).toList();
     }
 }
