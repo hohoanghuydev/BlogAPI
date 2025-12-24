@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     //CRUD
     UserResponseDto findById(long id);
-    UserResponseDto create(UserRequestDto userRequestDto);
+    UserResponseDto register(UserRequestDto userRequestDto);
     UserResponseDto update(long id, UserRequestDto userRequestDto);
     void delete(long id);
 
@@ -15,5 +15,6 @@ public interface UserService {
     List<UserResponseDto> findAll();
 
     //Business
+    UserResponseDto login(UserRequestDto userRequestDto);
     PostResponseDto createPost(Long userId, UserPostRequestDto userPostRequest);
 }

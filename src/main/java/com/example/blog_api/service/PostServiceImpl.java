@@ -71,7 +71,7 @@ public class PostServiceImpl implements PostService {
 
     private User getUser(Long id) {//?
         return userRepo.findById(id).orElseThrow(
-                () -> new ResourceNotFound(String.format(ErrorMessage.ERROR_USER_NOT_FOUND, id))
+                () -> new ResourceNotFound(ErrorMessage.ERROR_USER_NOT_FOUND)
         );
     }
 

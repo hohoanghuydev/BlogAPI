@@ -4,6 +4,7 @@ import com.example.blog_api.dto.*;
 import com.example.blog_api.entity.Post;
 import com.example.blog_api.entity.User;
 import com.example.blog_api.exception.DuplicateUsernameException;
+import com.example.blog_api.exception.InvalidPasswordException;
 import com.example.blog_api.exception.ResourceNotFound;
 import com.example.blog_api.helper.ErrorMessage;
 import com.example.blog_api.mapper.PostMapper;
@@ -12,6 +13,7 @@ import com.example.blog_api.repository.PostRepository;
 import com.example.blog_api.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +26,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PostRepository postRepo;
 
-    public User getUserById(long id) {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private String hashPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
+    private User getUserById(long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFound(String.format(ErrorMessage.ERROR_USER_NOT_FOUND, id)));
+                .orElseThrow(() -> new ResourceNotFound(ErrorMessage.ERROR_USER_NOT_FOUND));
     }
 
     private Boolean existsByUsername(String username) {
@@ -40,10 +49,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto create(UserRequestDto userRequestDto) {
+    public UserResponseDto login(UserRequestDto userRequestDto) {
+        if (!existsByUsername(userRequestDto.getUsername())) {
+            throw new ResourceNotFound(ErrorMessage.ERROR_USER_NOT_FOUND);
+        }
+
+        User user = userRepo.findByUsername(userRequestDto.getUsername()).get();
+
+        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
+            throw new InvalidPasswordException(ErrorMessage.ERROR_INVALID_PASSWORD);
+        }
+
+        return UserMapper.toResponseDto(user);
+    }
+
+    @Override
+    public UserResponseDto register(UserRequestDto userRequestDto) {
         if (existsByUsername(userRequestDto.getUsername())) {
             throw new DuplicateUsernameException(String.format(ErrorMessage.ERROR_DUPLICATE_USERNAME, userRequestDto.getUsername()));
         }
+
+        //password hop le
+        String hashedPassword = hashPassword(userRequestDto.getPassword());
+        userRequestDto.setPassword(hashedPassword);
 
         User createUser = UserMapper.toEntity(userRequestDto);
         createUser = userRepo.save(createUser);

@@ -19,6 +19,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/login")
+    public ResponseEntity<UserResponseDto> login(
+            @Valid @RequestBody UserRequestDto userRequestDto
+    ) {
+        UserResponseDto userResponseDto = userService.login(userRequestDto);
+        return ResponseEntity.ok(userResponseDto);
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable(name = "id") long userId) {
         UserResponseDto userResponseDto = userService.findById(userId);
@@ -33,7 +41,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto request) {
-        UserResponseDto userResponse = userService.create(request);
+        UserResponseDto userResponse = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
