@@ -15,6 +15,6 @@ public interface UserService {
     List<UserResponseDto> findAll();
 
     //Business
-    UserResponseDto login(UserRequestDto userRequestDto);
+    String login(UserRequestDto userRequestDto);
     PostResponseDto createPost(Long userId, UserPostRequestDto userPostRequest);
 }

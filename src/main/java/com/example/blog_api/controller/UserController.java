@@ -19,14 +19,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/login")
-    public ResponseEntity<UserResponseDto> login(
-            @Valid @RequestBody UserRequestDto userRequestDto
-    ) {
-        UserResponseDto userResponseDto = userService.login(userRequestDto);
-        return ResponseEntity.ok(userResponseDto);
-    }
-
     @GetMapping("{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable(name = "id") long userId) {
         UserResponseDto userResponseDto = userService.findById(userId);
