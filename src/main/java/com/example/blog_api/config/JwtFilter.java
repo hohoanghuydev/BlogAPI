@@ -30,19 +30,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authen = request.getHeader("Authorization");
-        String token = null;
-        String content = null;
+        String authenHeader = request.getHeader("Authorization");
 
-        if (authen != null && authen.startsWith("Bearer ")) {
-            token = authen.substring(7);
-            content = jwtService.extractContent(token);
+        if (authenHeader == null || !authenHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (content != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = applicationContext.getBean(MyUserDetailsService.class).loadUserByUsername(content);
+        String token = authenHeader.substring(7);
 
-            if (jwtService.validateToken(content, userDetails)) {
+        String username = jwtService.extractContent(token);
+
+        //Toi day b4.9
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = applicationContext.getBean(MyUserDetailsService.class).loadUserByUsername(username);
+
+            if (jwtService.validateToken(token, userDetails)) {//tai sao phai validate
                 UsernamePasswordAuthenticationToken authenticate =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticate.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

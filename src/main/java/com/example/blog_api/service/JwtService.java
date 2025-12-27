@@ -26,22 +26,12 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final String SECRET_KEY;
-
-    public JwtService() {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGenerator.generateKey();
-            SECRET_KEY = Base64.getEncoder().encodeToString(sk.getEncoded());
-            System.out.println("SECRET_KEY: " + SECRET_KEY);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private final String SECRET_KEY = "this-is-my-super-secret-key-32-bytes-long";
+    private final int EXPIRATION_TIME_OF_A_DAY = 1000 * 60 * 60 * 24;
 
     public String generateToken(String username) {
 
-        Map<String, Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();//Data ở đây, đối tượng ở đây
 
         String token = Jwts.builder()
                 .claims()
@@ -50,15 +40,17 @@ public class JwtService {
                 .and()
                 .signWith(getKey())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 3600 * 24))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_OF_A_DAY))
                 .compact();
 
         return token;
     }
 
     private SecretKey getKey() {
-        byte[] encoded = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(encoded);
+//        byte[] encoded = Decoders.BASE64.decode(
+//                Base64.getEncoder().encodeToString(SECRET_KEY.getBytes())
+//        ); có phải do nó không
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
     public String extractContent(String token) {
@@ -70,13 +62,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    //Parse token get data
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public boolean validateToken(String content, UserDetails userDetails) {
-        final String userName = extractContent(content);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(content);
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String userName = extractContent(token);
+        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

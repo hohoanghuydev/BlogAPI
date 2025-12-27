@@ -1,7 +1,10 @@
 package com.example.blog_api.config;
 
+import com.example.blog_api.entity.User;
+import com.example.blog_api.repository.UserRepository;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,6 +46,15 @@ public class SecurityConfig {
 //
 //        return new InMemoryUserDetailsManager(user);
 //    }
+    @Bean
+    CommandLineRunner initUserLogin(UserRepository userRepo, PasswordEncoder passwordEncoder) {
+        return args -> {
+            if (userRepo.count() == 0) {
+                User user = new User("admin", passwordEncoder.encode("123456"));
+                userRepo.save(user);
+            }
+        };
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -72,8 +83,8 @@ public class SecurityConfig {
                 )
                 .addFilterBefore((Filter) jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults());
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

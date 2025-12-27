@@ -58,12 +58,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(UserRequestDto userRequestDto) {
-//        if (!existsByUsername(userRequestDto.getUsername())) {
-//            throw new ResourceNotFound(ErrorMessage.ERROR_USER_NOT_FOUND);
-//        }
-//
-//        User user = userRepo.findByUsername(userRequestDto.getUsername()).get();
-
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(userRequestDto.getUsername(), userRequestDto.getPassword()));
 
